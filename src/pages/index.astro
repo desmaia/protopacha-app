@@ -1,1 +1,17 @@
+---
+import { db, Host, Message } from 'astro:db';
+
+const hosts = await db.select().from(Host);
+---
 <h1>Pacha Go</h1>
+
+<h2>Jobs</h2>
+
+{
+  hosts.map(({ name, experience }) => (
+    <article>
+      <p>{name}:</p>
+      <p>{experience}</p>
+    </article>
+  ))
+}
