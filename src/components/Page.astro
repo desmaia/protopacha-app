@@ -1,0 +1,119 @@
+---
+import { db, Host } from "astro:db";
+
+export const hosts = await db.select().from(Host);
+
+interface Props {
+	title: string;
+	filters: Filters;
+	host: null | (typeof hosts)[number];
+}
+
+/* FILTERS */
+
+export const filterOptions = ["Cherries", "Germany"] as const;
+export type Filter = (typeof filterOptions)[number];
+
+export const matchSingle = (filter: Filter) => (host: (typeof hosts)[number]) =>
+	({
+		Cherries: host.experience.includes("cherries") ? true : false,
+		Germany: host.experience.includes("Germany") ? true : false,
+	})[filter];
+
+export const match = (filters_: Set<Filter>) => (host: (typeof hosts)[number]) =>
+	[...filters_].reduce(
+		(acc, filter) => acc && matchSingle(filter)(host),
+		true,
+	);
+
+const combine = (filters: Filter[]) => new Set(filters);
+
+export const filterCombinations = [
+	combine(["Cherries"]),
+	combine(["Germany"]),
+	combine(["Cherries", "Germany"]),
+];
+
+export type Filters = (typeof filterCombinations)[number];
+
+const { title, host, filters } = Astro.props || {title:"", host:null, filters:new Set([])};
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<header>Pacha Go (TODO: Logo)</header>
+		{
+			host && (
+					<a style="position:fixed; inset:0; background:#3935" href="../"></a>
+					<form
+						style="background:white; position:fixed; margin:auto; padding:.5em; border:1px solid #494; display:flex; flex-direction: column; gap:.8em;border-radius:.5em;"
+					>
+						<fieldset style="border:1px solid #3935; border-radius:.4em">
+							<legend>{host.name}</legend>
+							{host.experience}
+						</fieldset>
+						<fieldset style="border:1px solid #3935; border-radius:.4em">
+							<legend>
+							Your message to <b>{host.name}</b>:
+							</legend>
+							<textarea />
+						</fieldset>
+						<input type="submit"></input>
+					</form>
+				)
+			}
+		<nav>
+			{filterOptions.map((filterName) => <button>{filterName}</button>)}
+		</nav>
+		<ul>
+			{
+				hosts.map(({ name, experience }) => (
+					<li>
+						<a href={name}>
+							<b>{name}:</b>
+						</a>
+						<span> {experience}</span>
+					</li>
+				))
+			}
+		</ul>
+		<footer></footer>
+	</body>
+</html>
+<style is:global>
+	:root {
+		--accent: 136, 58, 234;
+		--accent-light: 224, 204, 250;
+		--accent-dark: 49, 10, 101;
+		--accent-gradient: linear-gradient(
+			45deg,
+			rgb(var(--accent)),
+			rgb(var(--accent-light)) 30%,
+			white 60%
+		);
+	}
+	html {
+		font-family: system-ui, sans-serif;
+		background: #dbff92;
+	}
+	code {
+		font-family:
+			Menlo,
+			Monaco,
+			Lucida Console,
+			Liberation Mono,
+			DejaVu Sans Mono,
+			Bitstream Vera Sans Mono,
+			Courier New,
+			monospace;
+	}
+</style>

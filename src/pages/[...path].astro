@@ -1,0 +1,39 @@
+---
+import { db, Host } from "astro:db";
+import {
+  type Filter,
+  filterOptions,
+  filterCombinations,
+  match,
+} from "../components/Page.astro";
+import Page from "../components/Page.astro";
+
+/* PATHS */
+
+export async function getStaticPaths() {
+  const hosts = await db.select().from(Host);
+
+  const justHosts = hosts.map((host) => ({
+    params: { path: host.name },
+    props: { host: host, filters: new Set([]), title: host.name },
+  }));
+
+  const justFilters = filterCombinations.map((filters: Set<Filter>) => ({
+    params: { path: [...filters].join("/") },
+    props: { host: null, filters: filters, title: "Pacha Go (Search)" },
+  }));
+
+  const filtersAndHost = filterCombinations.flatMap((filters: Set<Filter>) =>
+    hosts
+      .map((host) => ({
+        params: { path: [...filters, host.name].join("/") },
+        props: { host: host, filters: filters, title: host.name },
+      }))
+      .filter(({ props }) => match(props.filters)(props.host)),
+  );
+
+  return [...justHosts, ...justFilters, ...filtersAndHost];
+}
+---
+
+<Page {...Astro.props} />

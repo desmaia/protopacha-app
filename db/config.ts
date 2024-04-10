@@ -1,5 +1,5 @@
 import { defineDb, defineTable, column } from 'astro:db';
- 
+
 const Host = defineTable({
   columns: {
     name: column.text({ primaryKey: true }),

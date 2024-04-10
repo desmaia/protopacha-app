@@ -1,18 +1,5 @@
 ---
-import { db, Host, Message } from 'astro:db';
-
-const hosts = await db.select().from(Host);
+import Page from "../components/Page.astro";
 ---
-<h1>Pacha Go</h1>
 
-<h2>Jobs</h2>
-
-{
-  hosts.map(({ name, experience }) => (
-    <article>
-      <p>{name}:</p>
-      <p>{experience}</p>
-      <a href={name}>Apply Now!!!</a>
-    </article>
-  ))
-}
+<Page {...{ title: "Pacha Go", filters: new Set([]), host: null }} />
