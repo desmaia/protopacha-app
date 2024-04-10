@@ -1,0 +1,19 @@
+---
+import { hosts } from "../data.ts";
+
+interface Props {
+    predicate: Predicate;
+}
+
+export type Predicate = ["Germany"] | ["Cherries"] | ["Germany", "Cherries"];
+---
+
+{
+    hosts.map(({ name, experience }) => (
+        <article>
+            <p>{name}:</p>
+            <p>{experience}</p>
+            <a href={name}>Apply Now!!!</a>
+        </article>
+    ))
+}
