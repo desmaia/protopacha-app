@@ -6,17 +6,24 @@ import { hosts } from "../data.ts";
 import Contact from "../components/Contact.astro";
 
 export async function getStaticPaths() {
-  return hosts.flatMap((host) =>
-    [[] as string[], ...predicates].map((predicate) => ({
-      params: { path: [...predicate, host.name].join("/") },
-      props: { host: host, predicate: predicate },
-    })),
+  return [...hosts, null].flatMap((maybeHost) =>
+    [[] as string[], ...predicates].map((predicate) =>
+      maybeHost == null
+        ? {
+            params: { path: [...predicate].join("/") },
+            props: { host: null, predicate: predicate },
+          }
+        : {
+            params: { path: [...predicate, maybeHost.name].join("/") },
+            props: { host: maybeHost, predicate: predicate },
+          },
+    ),
   );
 }
 ---
 
 <Page title="Pacha Go"
-  ><Contact {...Astro.props} /><Filter
+  >{Astro.props.host && <Contact host={Astro.props.host} />}<Filter
     predicate={Astro.props.predicate}
   /></Page
 >
