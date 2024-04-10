@@ -1,0 +1,16 @@
+---
+import { hosts } from "../data.ts";
+
+interface Props {
+	host: (typeof hosts)[number];
+}
+
+const { host } = Astro.props;
+---
+
+<div>Good dog,{host.name}!</div>
+<label
+	>Your Message:
+	<textarea></textarea></label
+>
+

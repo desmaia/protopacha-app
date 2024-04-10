@@ -1,0 +1,59 @@
+---
+import { hosts } from "../data.ts";
+
+interface Props {
+    predicate: Predicate;
+}
+
+const tokens = ["Germany", "Cherries"] as const;
+type Token = (typeof tokens)[number];
+
+export const predicates = [
+    [],
+    ["Germany"],
+    ["Cherries"],
+    ["Germany", "Cherries"],
+];
+
+export type Predicate = (typeof predicates)[number];
+
+const { predicate } = Astro.props;
+---
+<hr/>
+{
+    tokens.map((token) =>
+        predicate.join(",").includes(token) ? (
+            <a
+                style="border:1px solid green; border-radius:1em; background:black; color:white;"
+                href={token}
+            >
+                {token}
+            </a>
+        ) : (
+            <a style="border:1px solid green; border-radius:1em;" href={token}>
+                {token}
+            </a>
+        ),
+    )
+}
+<hr />
+
+{
+    hosts
+        .filter(({ experience }) =>
+            predicate.reduce(
+                (acc, current) =>
+                    acc &&
+                    (experience.includes(current) ||
+                        experience.includes(current.toLowerCase())),
+                true,
+            ),
+        )
+        .map(({ name, experience }) => (
+            <article>
+                <p>{name}:</p>
+                <p>{experience}</p>
+                <a href={name}>Apply Now!!!</a>
+            </article>
+        ))
+}
