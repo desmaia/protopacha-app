@@ -6,14 +6,26 @@ interface Props {
 }
 
 export type Predicate = ["Germany"] | ["Cherries"] | ["Germany", "Cherries"];
+
+const { predicate } = Astro.props;
 ---
 
 {
-    hosts.map(({ name, experience }) => (
-        <article>
-            <p>{name}:</p>
-            <p>{experience}</p>
-            <a href={name}>Apply Now!!!</a>
-        </article>
-    ))
+    hosts
+        .filter(({ experience }) =>
+            predicate.reduce(
+                (acc, current) =>
+                    acc &&
+                    (experience.includes(current) ||
+                        experience.includes(current.toLowerCase())),
+                true,
+            ),
+        )
+        .map(({ name, experience }) => (
+            <article>
+                <p>{name}:</p>
+                <p>{experience}</p>
+                <a href={name}>Apply Now!!!</a>
+            </article>
+        ))
 }
