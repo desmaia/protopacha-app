@@ -1,0 +1,19 @@
+---
+import Page from "../components/Page.astro";
+import Filter from "../components/Filter.astro";
+import type Predicate from "../components/Filter.astro";
+import { hosts } from "../data.ts";
+import Contact from "../components/Contact.astro";
+
+export async function getStaticPaths() {
+  return hosts.map((host) => ({
+    params: { path: host.name },
+    props: { host: host },
+  }));
+}
+---
+
+<Page title="Pacha Go"
+  ><Contact {...Astro.props} /><Filter predicate={["Cherries"]} /></Page
+>
+
